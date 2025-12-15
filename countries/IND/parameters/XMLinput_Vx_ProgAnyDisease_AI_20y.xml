@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TB.Vx.model.inputfile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../TBmod-schema-E.xsd">
+  <simulation from.year="1900" thru.year="2052"> <!-- previously: from.year="1900" thru.year="2022">-->
+    <options>
+      <numerical.integration method="ode45" atol="0" rtol="1e-7" min.value.for.state.var="-0.1"/> 
+      <intervention.start from.incidence.data="VXa"/>
+    </options>
+    <demography country.code="ignored" rescale.population="1950"> <!--previously 1950-->
+      <from.data>
+        <population file="data/demographics.csv"/>
+        <birthrate from.population.data="true"/>
+        <mortality file="data/deathrates.csv"/>
+      </from.data>
+    </demography>
+    <contact.matrix file="data/all_contacts_2021.txt"/>
+  </simulation>
+  <output>
+    <detailed.output years="seq(2024,2051,1)" age.group.lower.limits="0,15" econ.output="true" suppress.zeros.in.stocks="false" suppress.zeros.in.flows="false" combine.stocks.and.flows="false">
+      <flows dim="TB" incidence="true" transmission="true" progression="true" treatment="true"/>
+      <flows dim="HIV" />
+      <flows dim="VXa" incidence="true" transmission="false" progression="true" treatment="false"/>
+      <flows dim="RISK"/>
+      <flows dim="SES"/>
+    </detailed.output>
+  </output>
+  <ages lower.limits="c(0:80,90)"/>
+  <VXa>
+    <VXa.states>
+      <state name="never" fraction.at.birth="1"/>
+      <state name="prev1"/>
+      <state name="prev2"/>
+      <state name="waned"/>
+      <state name="vac1"/>
+      <state name="vac2"/>
+      <state name="recvcount"/>
+    </VXa.states>
+    <VXa.incidence>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_never_prev1.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_never_vac1.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_waned_prev1.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_waned_vac1.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_prev1_prev2.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_prev1_vac1.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+      <incidence.data file="data/VXa.incidence/ProgAnyDisease_vac1_vac2.txt" times="2024,2025" values="1,1" proportions="false" denominator="susc" once.per.year="true"/>
+    </VXa.incidence>
+    <VXa.progression>
+      <VXa.parameter TB.state="S" name="w" value="0.05"/>
+      <VXa.parameter TB.state="C" name="w" value="0.05"/>
+      <VXa.parameter TB.state="I" name="w" value="0.05"/>
+      <VXa.parameter TB.state="Dn" name="w" value="10"/>
+      <VXa.parameter TB.state="Ds" name="w" value="10"/>
+      <VXa.parameter TB.state="Dc" name="w" value="10"/>
+      <VXa.parameter TB.state="T" name="w" value="10"/>
+      <VXa.parameter TB.state="Rt" name="w" value="0.05"/>
+      <VXa.parameter TB.state="R" name="w" value="0.05"/>
+      <VXa.parameter TB.state="TBdead" name="w" value="0"/>
+      <VXa.parameter TB.state="Dncount" name="w" value="0"/>
+      <VXa.parameter TB.state="Dscount" name="w" value="0"/>
+      <VXa.parameter TB.state="Dccount" name="w" value="0"/>
+      <VXa.parameter TB.state="DcTcount" name="w" value="0"/>
+      <constant.transition.matrix>
+        <transition from="vac1" to="waned" rate="w"/>
+        <transition from="vac2" to="vac1" rate="w"/>
+      </constant.transition.matrix>
+    </VXa.progression>
+  </VXa>
+  <SES> <SES.states> <state name="all"/> </SES.states> </SES> <!--<SES> <SES.states> <state name="NA"/> </SES.states> </SES>-->
+  <RISK> <RISK.states> <state name="all"/> </RISK.states> </RISK>
+  <HIV> <HIV.states> <state name="all"/> </HIV.states> </HIV>
+  <TB>
+    <TB.states>
+      <state name="S" fraction.at.birth="1"/>
+      <state name="C"/>
+      <state name="I"/>
+      <state name="Dn"/>
+      <state name="Ds"/>
+      <state name="Dc"/>
+      <state name="T"/>
+      <state name="Rt"/>
+      <state name="R"/>
+      <state name="TBdead"/>
+      <state name="Dncount"/>
+      <state name="Dscount"/>
+      <state name="Dccount"/>
+      <state name="DcTcount"/>
+    </TB.states>
+    <seeded.infections name="multiplier" value="1.0">
+      <seeded.infection fraction="0.2460"  age.from="0" age.thru="99" state="C"/>
+      <seeded.infection fraction="0.0188"  age.from="0" age.thru="99" state="I"/>
+      <seeded.infection fraction="0.1980"  age.from="0" age.thru="99" state="Dn"/>
+      <seeded.infection fraction="0.00317" age.from="0" age.thru="99" state="Ds"/>
+      <seeded.infection fraction="0.00265" age.from="0" age.thru="99" state="Dc"/>
+      <seeded.infection fraction="0.0484"  age.from="0" age.thru="99" state="Rt"/>
+      <seeded.infection fraction="0.0484"  age.from="0" age.thru="99" state="R"/>
+    </seeded.infections>
+    <TB.progression>
+      <age.groups>
+        <age.group name="A0"/>
+        <age.group name="A15"/>
+      </age.groups>
+      <TB.parameter VXa.state="never" name="pV" value="0"/>
+      <TB.parameter VXa.state="prev1" name="pV" value="0"/>
+      <TB.parameter VXa.state="prev2" name="pV" value="0"/>
+      <TB.parameter VXa.state="waned" name="pV" value="0"/>
+      <TB.parameter VXa.state="vac1" name="pV" value="0.50"/>
+      <TB.parameter VXa.state="vac2" name="pV" value="0.75"/>
+      <TB.parameter VXa.state="recvcount" name="pV" value="0"/>
+      <TB.parameter name="k_prog" age.group="A0" value="0.5"/>
+      <TB.parameter name="k_prog" age.group="A15" value="1"/>
+      <TB.parameter name="k_mort" age.group="A0" value="1.3"/>
+      <TB.parameter name="k_mort" age.group="A15" value="1"/>
+      <TB.parameter name="k_dx" age.group="A0" value="0.7"/>
+      <TB.parameter name="k_dx" age.group="A15" value="1"/>
+      <TB.parameter name="infclr"  value="2.1"/>
+      <TB.parameter name="infnon"  value="0.125"/>
+      <TB.parameter name="infsub"  value="0.060"/>
+      <TB.parameter name="nonrec"  value="0.185"/>
+      <TB.parameter name="nonsub"  value="0.225"/>
+      <TB.parameter name="subnon"  value="1.635"/>
+      <TB.parameter name="subclin" value="0.67"/> <!--Rate of progression from DS to DC-->
+      <TB.parameter name="clinsub" value="0.50"/>
+      <TB.parameter name="relnon"  value="0.006"/> <!-- relapse: include in treatment matrix-->
+      <TB.parameter name="relsub"  value="0.006"/> <!-- relapse: include in treatment matrix-->
+      <TB.parameter name="muTB"    value="0.34"/> <!--clinical tb mortality rate -HT -->
+      <TB.parameter name="eta" value="0.8"/> <!-- Rate of treatment from Dc to T -HT -->
+      <TB.parameter name="tau" value="0.5"/> <!-- Treatment duration -HT -->
+      <TB.parameter name="kappa" value="0.0775"/> <!--On treatment mortality rate/0.13515014 -HT-->
+      <TB.parameter name="sfp" value="0.96"/> <!-- IND specific value related to treatment success -->
+
+      <constant.transition.matrix>
+        <transition from="I"  to="C"       rate="infclr"/> <!--self-clearance from I to C-->
+        <transition from="I"  to="Dn"      rate="infnon*(1-pV)"/> <!--progression of Infection to disease-->
+        <transition from="I"  to="Ds"      rate="infsub*(1-pV)"/> <!--progression of Infection to disease-->
+        <transition from="Dn" to="R"       rate="nonrec"/> <!--Rate of natural cure from Dn to R-->
+        <transition from="Dn" to="Ds"      rate="k_prog*nonsub"/> <!--Rate of progression from Dn to Ds-->
+        <transition from="Ds" to="Dn"      rate="subnon"/>
+        <transition from="Ds" to="Dc"      rate="k_prog*subclin"/> <!--Rate of progression from Ds to Dc-->
+        <transition from="Dc" to="Ds"      rate="clinsub"/>
+        <transition from="Rt" to="Dn"      rate="relnon*(1-pV)"/>
+        <transition from="Rt" to="Ds"      rate="relsub*(1-pV)"/>
+        <transition from="Dc" to="TBdead"  rate="muTB*k_mort"/> <!--added by HT: multiplied by age-->
+        <transition from="Ds" to="Dccount" rate="k_prog*subclin"/>
+        <transition from="I"  to="Dncount"      rate="infnon*(1-pV)"/>
+        <transition from="I"  to="Dscount"      rate="infsub*(1-pV)"/> 
+        <transition from="Dn" to="Dscount"      rate="k_prog*nonsub"/> 
+        <transition from="Ds" to="Dncount"      rate="subnon"/>
+        <transition from="Dc" to="Dscount"      rate="clinsub"/>
+        <transition from="Rt" to="Dncount"      rate="relnon*(1-pV)"/>
+        <transition from="Rt" to="Dscount"      rate="relsub*(1-pV)"/>
+      </constant.transition.matrix>
+
+      <transition.matrix name="init"> 
+        <transition from="Dc" to="T" rate="eta*k_dx"/> <!--instead of adding clintreat TB.parameter-->
+        <transition from="Dc" to="DcTcount" rate="eta*k_dx"/>
+        <multiplier name="etamul" times="1959, 1960, 1961, 1962, 1963, 1964, 1965, 1966, 1967, 1968, 1969, 1970, 1971,
+                                         1972, 1973, 1974, 1975, 1976, 1977, 1978, 1979, 1980, 1981, 1982, 1983, 1984,         
+                                         1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997,         
+                                         1998, 1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010,         
+                                         2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021" 
+                                  values="0, 0.002731961, 0.003334807, 0.004070138, 0.004966802, 0.006059801, 0.007391541,         
+                                          0.009013299, 0.010986943, 0.013386918, 0.016302499, 0.019840306, 0.024127021, 0.029312231,         
+                                          0.035571189, 0.043107255, 0.052153563, 0.062973356, 0.07585818, 0.091122961, 0.109096821,          
+                                          0.130108474, 0.154465265, 0.182425524, 0.214165017, 0.249739894, 0.289050497, 0.331812228,          
+                                          0.377540669, 0.425557483, 0.475020813, 0.524979187, 0.574442517, 0.622459331, 0.668187772,          
+                                          0.710949503, 0.750260106, 0.785834983, 0.817574476, 0.845534735, 0.869891526, 0.890903179,          
+                                          0.908877039, 0.92414182, 0.937026644, 0.947846437, 0.956892745, 0.964428811, 0.970687769,          
+                                          0.975872979, 0.980159694, 0.983697501, 0.986613082, 0.989013057, 0.990986701, 0.992608459, 
+                                          0.993940199, 0.995033198, 0.995929862, 0.996665193, 0.997268039, 0.986613082, 1"/>
+        </transition.matrix>
+
+      <transition.matrix name="nodeadreported"> 
+        <transition from="T" to="Dc" rate="((1-sfp)/tau)*(1-kappa*k_mort)"/> 
+        <transition from="T" to="Rt" rate="(sfp/tau)*(1-kappa*k_mort)"/> <!-- R to Rt -HT-->
+      <multiplier name="ft" times="2012,2013,2014,2015,2016,2017,2018,2019,2020" values="0.60,0.63,0.68,0.67,0.73,0.77,0.80,0.83,0.87"/>  
+      </transition.matrix> 
+      
+      <transition.matrix name="nodeadnotreported"> 
+        <transition from="T" to="Dc" rate="(0.60/tau)*(1-kappa*k_mort)"/> 
+        <transition from="T" to="Rt" rate="(0.40/tau)*(1-kappa*k_mort)"/> <!-- R to Rt -HT-->
+        <multiplier name="oneminusft" times="2012,2013,2014,2015,2016,2017,2018,2019,2020" values="0.40,0.37,0.32,0.33,0.27,0.23,0.20,0.17,0.13"/>  
+      </transition.matrix> 
+      
+      <transition.matrix name="died">
+        <transition from="T" to="TBdead" rate= "kappa*k_mort/tau"/>
+      <multiplier name="kappat" times="1950,2000,2019" values="2,1.5,1"/>
+      </transition.matrix>
+    
+    </TB.progression>
+    <TB.infectivity>
+      <TB.parameter name="t" value="0.83"/>  <!-- NIH2 is making this a varying parameter between 0.6 to 1 -->
+      <TB.parameter name="ep" value="0.1971997625"/>
+      <!-- COUNTRY SPECIFIC VALUE-->
+      <infectivity.matrix Mtb-strain="DS">
+        <infectivity state="Ds" value="(1-ep)*t"/>
+        <infectivity state="Dc" value="(1-ep)*1"/>
+      </infectivity.matrix>
+    </TB.infectivity>
+    <TB.transmission>
+      <age.groups>
+        <age.group name="A0"/>
+        <age.group name="A15"/>
+      </age.groups>
+      <TB.parameter name="k_inf" age.group="A0" value="0.5"/>
+      <TB.parameter name="k_inf" age.group="A15" value="1"/>
+      <TB.parameter name="lambda" value="0.0038"/>
+      <TB.parameter name="p" value="0.30"/>
+      <TB.parameter name="r" value="3.205"/>
+      <transmission.matrix Mtb-strain="DS">
+        <transition from="S" to="I" rate="lambda*k_inf"/>
+        <transition from="C" to="I" rate="lambda*k_inf"/>
+        <transition from="R" to="I" rate="lambda*p*k_inf"/>
+        <transition from="Rt" to="I" rate="lambda*r*k_inf"/> <!-- k_inf: Relative infectivity of subclinical and clinical TB in children-->
+      <multiplier name="beta" times="1800,2020" values="1,1"/>
+      </transmission.matrix>      
+    </TB.transmission>
+  </TB>
+</TB.Vx.model.inputfile>

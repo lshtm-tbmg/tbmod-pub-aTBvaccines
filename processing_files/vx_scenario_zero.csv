@@ -1,0 +1,5 @@
+﻿scenario,input,xml,runtype
+baseline,input_zero.csv,XMLinput_NH_baseline_zero.xml,baseline
+ProgAnyDisease_AI,input_zero.csv,XMLinput_Vx_ProgAnyDisease_AI_zero.xml,ProgAnyDisease_AI
+ProgInfecDisease_AI,input_zero.csv,XMLinput_Vx_ProgInfecDisease_AI_zero.xml,ProgInfecDisease_AI
+ProgClinDisease_AI,input_zero.csv,XMLinput_Vx_ProgClinDisease_AI_zero.xml,ProgClinDisease_AI
